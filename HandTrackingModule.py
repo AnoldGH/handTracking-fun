@@ -2,7 +2,33 @@ import cv2
 import mediapipe as mp
 import time
 
+
+# Macros
+WRIST = 0
+THUMB_CMC = 1
+THUMB_MCP = 2
+THUMB_IP = 3
+THUMB_TIP = 4
+INDEX_FINGER_MCP = 5
+INDEX_FINGER_PIP = 6
+INDEX_FINGER_DIP = 7
+INDEX_FINGER_TIP = 8
+MIDDLE_FINGER_MCP = 9
+MIDDLE_FINGER_PIP = 10
+MIDDLE_FINGER_DIP = 11
+MIDDLE_FINGER_TIP = 12
+RING_FINGER_MCP = 13
+RING_FINGER_PIP = 14
+RING_FINGER_DIP = 15
+RING_FINGER_TIP = 16
+PINKY_MCP = 17
+PINKY_PIP = 18
+PINKY_DIP = 19
+PINKY_TIP = 20
+
 class handDetector():
+      
+    
     def __init__(self, running_mode=False, num_hands=2, model_complexity=1, min_hand_detection_confidence=0.5, min_hand_presence_confidence=0.5, min_tracking_confidence=0.5, result_callback=None) -> None:
         
         self.running_mode = running_mode
@@ -73,7 +99,7 @@ class handDetector():
             cx, cy = int(self.width * lm.x), int(self.height * lm.y)
             cv2.circle(img, (cx, cy), radius, color, thickness, linetype)
     
-    def _connect_landmarks_safe(self, img, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
+    def _track_landmarks_connection_safe(self, img, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
         if self.results.multi_hand_landmarks:
             hand = self.results.multi_hand_landmarks[hdID]
             lm1, lm2 = hand[lm1ID], hand[lm2ID]
@@ -82,11 +108,11 @@ class handDetector():
     
     def track_landmark(self, img, hdID, lmID, radius, color, thickness=1, linetype=cv2.LINE_8):
         curry = lambda: self._track_landmark_safe(img, hdID, lmID, radius, color, thickness, linetype)
-        self.drawings.append(curry)    
+        self.drawings.append(curry)
         
-    def connect_landmarks(self, img, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
+    def track_landmarks_connection(self, img, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
         curry = lambda: \
-            self._connect_landmarks_safe(img, hdID, lm1ID, lm2ID, color, thickness, linetype)
+            self._track_landmarks_connection_safe(img, hdID, lm1ID, lm2ID, color, thickness, linetype)
         self.drawings.append(curry)
     
     def render(self):
@@ -117,7 +143,8 @@ def main():
             # video.write(img)
             
             # Drawing
-            detector.track_landmark(img, 0, 4, 15, (0, 255, 255))
+            detector.track_landmark(img, 0, PINKY_TIP, 15, (0, 255, 255))
+            detector.track_landmarks_connection(img, 0, MIDDLE_FINGER_TIP, WRIST, (255, 0, 0))
             detector.render()
             
             cv2.imshow("Image", img)
