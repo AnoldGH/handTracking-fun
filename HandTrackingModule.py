@@ -92,14 +92,14 @@ class handDetector():
         self.ptime = self.ctime
     
     # Drawing Sub-module
-    def _track_landmark_safe(self, img, hdID, lmID, radius, color, thickness=1, linetype=cv2.LINE_8):
+    def _track_landmark_safe(self, img, hdID, lmID, radius, color, thickness=2, linetype=cv2.LINE_8):
         if self.results.multi_hand_landmarks:
             hand = self.results.multi_hand_landmarks[hdID]
             lm = hand.landmark[lmID]
             cx, cy = int(self.width * lm.x), int(self.height * lm.y)
             cv2.circle(img, (cx, cy), radius, color, thickness, linetype)
     
-    def _track_landmarks_connection_safe(self, img, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
+    def _track_landmarks_connection_safe(self, img, hdID, lm1ID, lm2ID, color, thickness=2, linetype=cv2.LINE_8):
         if self.results.multi_hand_landmarks:
             hand = self.results.multi_hand_landmarks[hdID]
             lm1, lm2 = hand.landmark[lm1ID], hand.landmark[lm2ID]
@@ -116,11 +116,33 @@ class handDetector():
         curry = lambda: \
             self._track_landmarks_connection_safe(img, hdID, lm1ID, lm2ID, color, thickness, linetype)
         self.drawings.append(curry)
-    
+        
+    def track_custom_point(self, drawing: function):
+        self.drawings.append(drawing)
+        
     def render(self):
         for drawing in self.drawings:
             drawing()
     
+    # Curry helper functions
+    def Xof(self, lmID):
+        def getter():
+            hand = self.results.multi_hand_landmarks
+            if hand: return self.width * hand.landmark[lmID].x
+            else: return None
+        return getter
+    
+    def Yof(self, lmID):
+        def getter():
+            hand = self.results.multi_hand_landmarks
+            if hand: return self.height * hand.landmark[lmID].y
+            else: return None
+        return getter
+    
+    def positionOf(self, lmID):
+        return self.Xof(lmID), self.Yof(lmID)
+    
+
     
 def main():
     pTime = 0
@@ -147,6 +169,13 @@ def main():
             # Drawing
             detector.track_landmark(img, 0, PINKY_TIP, 15, (0, 255, 255))
             detector.track_landmarks_connection(img, 0, MIDDLE_FINGER_TIP, WRIST, (255, 0, 0))
+            
+            # Example custom function
+            itX, itY = detector.positionOf(INDEX_FINGER_TIP)
+            def track_middle_point_between_indextip_pinkytip():
+                cv2.circle(img, (int(itX), int(itY)), 5, (255, 0, 0), 3)
+            detector.track_custom_point(track_middle_point_between_indextip_pinkytip)
+            
             detector.render()
             
             cv2.imshow("Image", img)
