@@ -102,8 +102,10 @@ class handDetector():
     def _track_landmarks_connection_safe(self, img, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
         if self.results.multi_hand_landmarks:
             hand = self.results.multi_hand_landmarks[hdID]
-            lm1, lm2 = hand[lm1ID], hand[lm2ID]
-            cv2.line(img, (lm1.x, lm1.y), (lm2.x, lm2.y), \
+            lm1, lm2 = hand.landmark[lm1ID], hand.landmark[lm2ID]
+            cx1, cy1 = int(self.width * lm1.x), int(self.height * lm1.y)
+            cx2, cy2 = int(self.width * lm2.x), int(self.height * lm2.y)
+            cv2.line(img, (cx1, cy1), (cx2, cy2), \
                 color, thickness, linetype)
     
     def track_landmark(self, img, hdID, lmID, radius, color, thickness=1, linetype=cv2.LINE_8):
