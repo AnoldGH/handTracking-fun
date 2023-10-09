@@ -108,17 +108,17 @@ class handDetector():
             cv2.line(img, (cx1, cy1), (cx2, cy2), \
                 color, thickness, linetype)
     
-    def track_landmark(self, img, hdID, lmID, radius, color, thickness=1, linetype=cv2.LINE_8):
-        curry = lambda: self._track_landmark_safe(img, hdID, lmID, radius, color, thickness, linetype)
+    def track_landmark(self, hdID, lmID, radius, color, thickness=1, linetype=cv2.LINE_8):
+        curry = lambda img: self._track_landmark_safe(img, hdID, lmID, radius, color, thickness, linetype)
         self.drawings.append(curry)
         
-    def track_landmarks_connection(self, img, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
-        curry = lambda: \
+    def track_landmarks_connection(self, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
+        curry = lambda img: \
             self._track_landmarks_connection_safe(img, hdID, lm1ID, lm2ID, color, thickness, linetype)
         self.drawings.append(curry)
         
-    def track_midpoint_between(self, img, hd1ID, lm1ID, hd2ID, lm2ID, radius, color, thickness=1, linetype=cv2.LINE_8):
-        def curry():
+    def track_midpoint_between(self, hd1ID, lm1ID, hd2ID, lm2ID, radius, color, thickness=1, linetype=cv2.LINE_8):
+        def curry(img):
             cx1, cy1 = self.positionOf(lm1ID, hd1ID)
             cx2, cy2 = self.positionOf(lm2ID, hd2ID)
             if cx1 is not None and cx2 is not None:
@@ -129,9 +129,9 @@ class handDetector():
     def track_custom_point(self, drawing):
         self.drawings.append(drawing)
         
-    def render(self):
+    def render(self, img):
         for drawing in self.drawings:
-            drawing()
+            drawing(img)
     
     # Curry helper functions
     def Xof(self, lmID, hdID=0):
@@ -156,6 +156,11 @@ def main():
     
     video = cv2.VideoWriter('video.mp4', -1, 24, (640, 360))
     
+    # Drawing
+    detector.track_landmark(0, PINKY_TIP, 15, (0, 255, 255))
+    detector.track_landmarks_connection(0, MIDDLE_FINGER_TIP, WRIST, (255, 0, 0))
+    detector.track_midpoint_between(0, PINKY_TIP, 0, MIDDLE_FINGER_TIP, 5, (255, 0, 0), 3, cv2.FILLED)
+    
     i = 0
     while True:
         success, img = capture.read()
@@ -170,12 +175,8 @@ def main():
             
             # video.write(img)
             
-            # Drawing
-            detector.track_landmark(img, 0, PINKY_TIP, 15, (0, 255, 255))
-            detector.track_landmarks_connection(img, 0, MIDDLE_FINGER_TIP, WRIST, (255, 0, 0))
-            detector.track_midpoint_between(img, 0, PINKY_TIP, 0, MIDDLE_FINGER_TIP, 5, (255, 0, 0), 3, cv2.FILLED)
             
-            detector.render()
+            detector.render(img)
             
             cv2.imshow("Image", img)
             
