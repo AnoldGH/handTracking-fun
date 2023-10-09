@@ -172,9 +172,11 @@ def main():
             
             # Example custom function
             itX, itY = detector.positionOf(INDEX_FINGER_TIP)
+            ptX, ptY = detector.positionOf(PINKY_TIP)
             def track_middle_point_between_indextip_pinkytip():
-                if itX is not None:
-                    cv2.circle(img, (int(itX()), int(itY())), 5, (255, 0, 0), 3)
+                if itX() is not None and ptX() is not None:
+                    tx, ty = int(itX() + ptX()) // 2, int(itY() + ptY()) // 2
+                    cv2.circle(img, (tx, ty), 5, (255, 0, 0), 3)
             detector.track_custom_point(track_middle_point_between_indextip_pinkytip)
             
             detector.render()
