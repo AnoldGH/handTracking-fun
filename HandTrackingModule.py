@@ -117,7 +117,7 @@ class handDetector():
             self._track_landmarks_connection_safe(img, hdID, lm1ID, lm2ID, color, thickness, linetype)
         self.drawings.append(curry)
         
-    def track_custom_point(self, drawing: function):
+    def track_custom_point(self, drawing):
         self.drawings.append(drawing)
         
     def render(self):
