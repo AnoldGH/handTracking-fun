@@ -125,22 +125,22 @@ class handDetector():
             drawing()
     
     # Curry helper functions
-    def Xof(self, lmID):
+    def Xof(self, lmID, hdID=0):
         def getter():
             hand = self.results.multi_hand_landmarks
-            if hand: return self.width * hand.landmark[lmID].x
+            if hand: return self.width * hand[hdID].landmark[lmID].x
             else: return None
         return getter
     
-    def Yof(self, lmID):
+    def Yof(self, lmID, hdID=0):
         def getter():
             hand = self.results.multi_hand_landmarks
-            if hand: return self.height * hand.landmark[lmID].y
+            if hand: return self.height * hand[hdID].landmark[lmID].y
             else: return None
         return getter
     
-    def positionOf(self, lmID):
-        return self.Xof(lmID), self.Yof(lmID)
+    def positionOf(self, lmID, hdID=0):
+        return self.Xof(lmID, hdID), self.Yof(lmID, hdID)
     
 
     
