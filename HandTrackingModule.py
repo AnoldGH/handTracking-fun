@@ -26,6 +26,12 @@ class handDetector():
         self.height = 360
         self.width = 640
         
+        # Stats - used for running diagnostics
+        self.stime = time.time()
+        self.ptime = self.stime
+        self.ctime = self.stime
+        self.fps = None
+        
     def findHands(self, img, draw=True):
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.hands.process(imgRGB)
@@ -55,6 +61,9 @@ class handDetector():
     
     def update(self, img):
         self.results = self.hands.process(img, cv2.COLOR_BGR2RGB)
+        self.ctime = time.time()
+        self.fps = int(1 / (self.ctime - self.ptime))
+        self.ptime = self.ctime
     
     # Drawing Sub-module
     def _track_landmark_safe(self, img, hdID, lmID, radius, color, thickness=1, linetype=cv2.LINE_8):
