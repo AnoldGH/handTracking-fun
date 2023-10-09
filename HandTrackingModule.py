@@ -126,18 +126,14 @@ class handDetector():
     
     # Curry helper functions
     def Xof(self, lmID, hdID=0):
-        def getter():
-            hand = self.results.multi_hand_landmarks
-            if hand: return self.width * hand[hdID].landmark[lmID].x
-            else: return None
-        return getter
+        hand = self.results.multi_hand_landmarks
+        if hand: return self.width * hand[hdID].landmark[lmID].x
+        else: return None
     
     def Yof(self, lmID, hdID=0):
-        def getter():
-            hand = self.results.multi_hand_landmarks
-            if hand: return self.height * hand[hdID].landmark[lmID].y
-            else: return None
-        return getter
+        hand = self.results.multi_hand_landmarks
+        if hand: return self.height * hand[hdID].landmark[lmID].y
+        else: return None
     
     def positionOf(self, lmID, hdID=0):
         return self.Xof(lmID, hdID), self.Yof(lmID, hdID)
@@ -171,11 +167,11 @@ def main():
             detector.track_landmarks_connection(img, 0, MIDDLE_FINGER_TIP, WRIST, (255, 0, 0))
             
             # Example custom function
-            itX, itY = detector.positionOf(INDEX_FINGER_TIP)
-            ptX, ptY = detector.positionOf(PINKY_TIP)
             def track_middle_point_between_indextip_pinkytip():
-                if itX() is not None and ptX() is not None:
-                    tx, ty = int(itX() + ptX()) // 2, int(itY() + ptY()) // 2
+                itX, itY = detector.positionOf(INDEX_FINGER_TIP)
+                ptX, ptY = detector.positionOf(PINKY_TIP)
+                if itX is not None and ptX is not None:
+                    tx, ty = int(itX + ptX) // 2, int(itY + ptY) // 2
                     cv2.circle(img, (tx, ty), 5, (255, 0, 0), 3)
             detector.track_custom_point(track_middle_point_between_indextip_pinkytip)
             
