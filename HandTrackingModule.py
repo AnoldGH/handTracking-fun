@@ -117,6 +117,15 @@ class handDetector():
             self._track_landmarks_connection_safe(img, hdID, lm1ID, lm2ID, color, thickness, linetype)
         self.drawings.append(curry)
         
+    def track_midpoint_between(self, img, hd1ID, lm1ID, hd2ID, lm2ID, radius, color, thickness=1, linetype=cv2.LINE_8):
+        def curry():
+            cx1, cy1 = self.positionOf(lm1ID, hd1ID)
+            cx2, cy2 = self.positionOf(lm2ID, hd2ID)
+            if cx1 is not None and cx2 is not None:
+                tx, ty = int((cx1 + cx2) // 2), int((cy1 + cy2) // 2)
+                cv2.circle(img, (tx, ty), radius, color, thickness, linetype)
+        self.track_custom_point(curry)
+        
     def track_custom_point(self, drawing):
         self.drawings.append(drawing)
         
@@ -136,8 +145,7 @@ class handDetector():
         else: return None
     
     def positionOf(self, lmID, hdID=0):
-        return self.Xof(lmID, hdID), self.Yof(lmID, hdID)
-    
+        return self.Xof(lmID, hdID), self.Yof(lmID, hdID)    
 
     
 def main():
@@ -165,15 +173,7 @@ def main():
             # Drawing
             detector.track_landmark(img, 0, PINKY_TIP, 15, (0, 255, 255))
             detector.track_landmarks_connection(img, 0, MIDDLE_FINGER_TIP, WRIST, (255, 0, 0))
-            
-            # Example custom function
-            def track_middle_point_between_indextip_pinkytip():
-                itX, itY = detector.positionOf(INDEX_FINGER_TIP)
-                ptX, ptY = detector.positionOf(PINKY_TIP)
-                if itX is not None and ptX is not None:
-                    tx, ty = int(itX + ptX) // 2, int(itY + ptY) // 2
-                    cv2.circle(img, (tx, ty), 5, (255, 0, 0), 3)
-            detector.track_custom_point(track_middle_point_between_indextip_pinkytip)
+            detector.track_midpoint_between(img, 0, PINKY_TIP, 0, MIDDLE_FINGER_TIP, 5, (255, 0, 0), 3, cv2.FILLED)
             
             detector.render()
             
