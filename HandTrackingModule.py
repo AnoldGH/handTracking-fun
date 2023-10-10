@@ -170,7 +170,7 @@ def main():
     while True:
         success, img = capture.read()
         if success:
-            detector.update()
+            detector.update(img)
             
             img = detector.findHands(img)
             
