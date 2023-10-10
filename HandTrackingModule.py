@@ -88,9 +88,9 @@ class handDetector():
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.hands.process(imgRGB)
         
-        self.ctime = time.time()
-        self.fps = int(1 / (self.ctime - self.ptime))
-        self.ptime = self.ctime
+        self._ctime = time.time()
+        self.fps = int(1 / (self._ctime - self._ptime))
+        self._ptime = self._ctime
         
     
     def getFPS(self):
