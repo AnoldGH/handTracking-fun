@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import time
+import math
 
 
 # Macros
@@ -94,7 +95,17 @@ class handDetector():
         
     
     def getFPS(self):
-        return self.fps        
+        return self.fps      
+    
+    
+    # Utility Functions
+    def distance_between(self, hd1ID, lm1ID, hd2ID, lm2ID):
+        cx1, cy1 = self.positionOf(lm1ID, hd1ID)
+        cx2, cy2 = self.positionOf(lm2ID, hd2ID)
+        if cx1 is not None and cx2 is not None:
+            return math.sqrt((cx1 - cx2) ** 2 + (cy1 - cy2) ** 2)
+        return None
+    
     
     # Drawing Sub-module
     def _track_landmark_safe(self, img, hdID, lmID, radius, color, thickness=2, linetype=cv2.LINE_8):
