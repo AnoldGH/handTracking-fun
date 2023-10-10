@@ -59,7 +59,6 @@ class handDetector():
         self.fps = None
         
     def findHands(self, img, draw=True):
-        imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         # self.results = self.hands.process(imgRGB)
         
         if self.results.multi_hand_landmarks:
@@ -86,7 +85,8 @@ class handDetector():
         return landmarks
     
     def update(self, img):
-        self.results = self.hands.process(img, cv2.COLOR_BGR2RGB)
+        imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        self.results = self.hands.process(imgRGB)
         
         self.ctime = time.time()
         self.fps = int(1 / (self.ctime - self.ptime))
