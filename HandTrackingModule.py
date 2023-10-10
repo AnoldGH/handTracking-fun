@@ -60,7 +60,7 @@ class handDetector():
         
     def findHands(self, img, draw=True):
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        self.results = self.hands.process(imgRGB)
+        # self.results = self.hands.process(imgRGB)
         
         if self.results.multi_hand_landmarks:
             for handLandmark in self.results.multi_hand_landmarks:
@@ -170,6 +170,8 @@ def main():
     while True:
         success, img = capture.read()
         if success:
+            detector.update()
+            
             img = detector.findHands(img)
             
             cv2.putText(img, str(detector.getFPS()), (10, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
