@@ -113,7 +113,7 @@ class handDetector():
             hand = self.results.multi_hand_landmarks[hdID]
             lm = hand.landmark[lmID]
             cx, cy = int(self.width * lm.x), int(self.height * lm.y)
-            cv2.circle(img, (cx, cy), radius, color, thickness, linetype)
+            cv2.circle(img, (cx, cy), radius, color, thickness, linetype)            
     
     def _track_landmarks_connection_safe(self, img, hdID, lm1ID, lm2ID, color, thickness=2, linetype=cv2.LINE_8):
         if self.results.multi_hand_landmarks:
@@ -123,15 +123,26 @@ class handDetector():
             cx2, cy2 = int(self.width * lm2.x), int(self.height * lm2.y)
             cv2.line(img, (cx1, cy1), (cx2, cy2), \
                 color, thickness, linetype)
+            
+    # TODO: Temporary
+    def _calculate_safe(self, func, x1, y1, x2, y2):
+        if x1 is None or x2 is None:
+            return None, None
+        else: return func((x1, y1), (x2, y2))
     
     def track_landmark(self, hdID, lmID, radius, color, thickness=1, linetype=cv2.LINE_8):
         curry = lambda img: self._track_landmark_safe(img, hdID, lmID, radius, color, thickness, linetype)
         self.drawings.append(curry)
+        # Return a curry function to get landmark coordinate
+        return lambda: self.positionOf(lmID, hdID)
+        
         
     def track_landmarks_connection(self, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
         curry = lambda img: \
             self._track_landmarks_connection_safe(img, hdID, lm1ID, lm2ID, color, thickness, linetype)
         self.drawings.append(curry)
+        # Return a curry function to get two end-points
+        return lambda: (self.positionOf(lm1ID, hdID), self.positionOf(lm1ID, hdID))
         
     def track_midpoint_between(self, hd1ID, lm1ID, hd2ID, lm2ID, radius, color, thickness=1, linetype=cv2.LINE_8):
         def curry(img):
@@ -141,6 +152,9 @@ class handDetector():
                 tx, ty = int((cx1 + cx2) // 2), int((cy1 + cy2) // 2)
                 cv2.circle(img, (tx, ty), radius, color, thickness, linetype)
         self.track_custom_point(curry)
+
+        # Return a curry function for value querying
+        
         
     def track_custom_point(self, drawing):
         self.drawings.append(drawing)
