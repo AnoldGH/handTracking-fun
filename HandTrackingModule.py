@@ -204,7 +204,7 @@ def main():
     capture = cv2.VideoCapture(0)
     detector = handDetector()
     
-    video = cv2.VideoWriter('video.mp4', -1, 24, (640, 360))
+    # video = cv2.VideoWriter('video.mp4', -1, 24, (640, 360))
     
     # Drawing
     detector.track_landmark(0, PINKY_TIP, 15, (0, 255, 255))
@@ -235,7 +235,7 @@ def main():
         
         i += 1
         
-    video.release()
+    # video.release()
             
 if __name__ == '__main__':
     main()
