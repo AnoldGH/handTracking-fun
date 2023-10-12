@@ -130,8 +130,6 @@ class handDetector():
         pos2 = pos[1]
         return (pos1 + pos2) / 2   
     
-            
-    # TODO: Temporary
     @DeprecationWarning
     def __calculate_safe(self, func, pos1, pos2):
         if pos1 is None or pos2 is None:
@@ -188,11 +186,14 @@ class handDetector():
         if hand: return self.height * hand[hdID].landmark[lmID].y
         else: return None
     
-    def positionOf(self, lmID, hdID=0):
+    def positionOf(self, lmID, hdID=0, cast_to_int=True):
         x = self.Xof(lmID, hdID)
         y = self.Yof(lmID, hdID)
         if x is None or y is None: return None
-        else: return np.array([self.Xof(lmID, hdID), self.Yof(lmID, hdID)]).astype(int)   
+        else: 
+            pos = np.array([self.Xof(lmID, hdID), self.Yof(lmID, hdID)])
+            if cast_to_int: pos = pos.astype(int)
+            return pos
 
     
 def main():
