@@ -54,16 +54,17 @@ while True:
         if hasHand:
             index_tip_pos = index_tip()
             thumb_tip_pos = thumb_tip()
+            thumb_index_mp_pos = thumb_index_midpoint()
             length = math.hypot(*(index_tip_pos - thumb_tip_pos))
             
             if length < 50:
-                cv2.circle(img, (cx, cy), 15, (0, 255, 0), cv2.FILLED)
+                cv2.circle(img, thumb_index_mp_pos, 15, (0, 255, 0), cv2.FILLED)
                 
             vol = np.interp(length, [50, 300], [minVolume, maxVolume])
             volBar = np.interp(length, [50, 300], [400, 150])
             volume.SetMasterVolumeLevel(vol, None)
             
-        detector.render()
+        detector.render(img)
     
     # landmarks = detector.findPosition(img, draw=False)
     # if len(landmarks) != 0:
