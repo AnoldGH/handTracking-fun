@@ -28,8 +28,7 @@ thumb_tip = detector.track_landmark(
 index_tip = detector.track_landmark(
     0, handTrack.INDEX_FINGER_TIP, 15, (255, 0, 255), 1, cv2.FILLED)
 detector.track_landmarks_connection(
-    0, handTrack.THUMB_TIP, handTrack.INDEX_FINGER_TIP, 
-    (255, 0, 255), 1, cv2.FILLED)
+    0, handTrack.THUMB_TIP, handTrack.INDEX_FINGER_TIP, (255, 0, 255))
 thumb_index_midpoint = detector.track_midpoint_between(0, handTrack.THUMB_TIP, 0, handTrack.INDEX_FINGER_TIP, 15, (0, 255, 255), 2, cv2.FILLED)
 
 # Volume Control
@@ -56,6 +55,11 @@ while True:
             thumb_tip_pos = thumb_tip()
             thumb_index_mp_pos = thumb_index_midpoint()
             length = math.hypot(*(index_tip_pos - thumb_tip_pos))
+            
+            print(index_tip_pos)
+            print(thumb_tip_pos)
+            print(thumb_index_mp_pos)
+            print(length)
             
             if length < 50:
                 cv2.circle(img, thumb_index_mp_pos, 15, (0, 255, 0), cv2.FILLED)
