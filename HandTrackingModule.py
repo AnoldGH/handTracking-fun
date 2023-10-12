@@ -2,7 +2,7 @@ import cv2
 import mediapipe as mp
 import time
 import math
-
+import numpy as np
 
 # Macros
 WRIST = 0
@@ -123,19 +123,26 @@ class handDetector():
             cx2, cy2 = int(self.width * lm2.x), int(self.height * lm2.y)
             cv2.line(img, (cx1, cy1), (cx2, cy2), \
                 color, thickness, linetype)
+
+    def _midpoint(self, pos1, pos2):
+        return (pos1 + pos2) / 2       
             
     # TODO: Temporary
-    def _calculate_safe(self, func, x1, y1, x2, y2):
-        if x1 is None or x2 is None:
-            return None, None
-        else: return func((x1, y1), (x2, y2))
+    def _calculate_safe(self, func, pos1, pos2):
+        if pos1 is None or pos2 is None:
+            return None
+        else: return func(pos1, pos2)
+        
+    def _calculate_safe(self, func, *pos_list):
+        if not all(pos_list):
+            return None
+        else: return func(pos_list)
     
     def track_landmark(self, hdID, lmID, radius, color, thickness=1, linetype=cv2.LINE_8):
         curry = lambda img: self._track_landmark_safe(img, hdID, lmID, radius, color, thickness, linetype)
         self.drawings.append(curry)
         # Return a curry function to get landmark coordinate
         return lambda: self.positionOf(lmID, hdID)
-        
         
     def track_landmarks_connection(self, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
         curry = lambda img: \
@@ -145,18 +152,20 @@ class handDetector():
         return lambda: (self.positionOf(lm1ID, hdID), self.positionOf(lm1ID, hdID))
         
     def track_midpoint_between(self, hd1ID, lm1ID, hd2ID, lm2ID, radius, color, thickness=1, linetype=cv2.LINE_8):
+        query = lambda: self._calculate_safe(
+            self._midpoint, self.positionOf(lm1ID, hd1ID), 
+            self.positionOf(lm2ID, hd2ID))
+        
         def curry(img):
-            cx1, cy1 = self.positionOf(lm1ID, hd1ID)
-            cx2, cy2 = self.positionOf(lm2ID, hd2ID)
-            if cx1 is not None and cx2 is not None:
-                tx, ty = int((cx1 + cx2) // 2), int((cy1 + cy2) // 2)
-                cv2.circle(img, (tx, ty), radius, color, thickness, linetype)
-        self.track_custom_point(curry)
+            tpos = query()
+            if tpos is not None:
+                cv2.circle(img, tpos, radius, color, thickness, linetype)
+        self._draw_custom_point(curry)
 
         # Return a curry function for value querying
-        
-        
-    def track_custom_point(self, drawing):
+        return query
+    
+    def _draw_custom_point(self, drawing):
         self.drawings.append(drawing)
         
     def render(self, img):
@@ -175,7 +184,10 @@ class handDetector():
         else: return None
     
     def positionOf(self, lmID, hdID=0):
-        return self.Xof(lmID, hdID), self.Yof(lmID, hdID)    
+        x = self.Xof(lmID, hdID)
+        y = self.Yof(lmID, hdID)
+        if x is None or y is None: return None
+        else: return np.array([self.Xof(lmID, hdID), self.Yof(lmID, hdID)])    
 
     
 def main():
