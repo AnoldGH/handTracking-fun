@@ -124,21 +124,24 @@ class handDetector():
             cv2.line(img, (cx1, cy1), (cx2, cy2), \
                 color, thickness, linetype)
 
+    # Helper functions
     def _midpoint(self, *pos):
         pos1 = pos[0]
         pos2 = pos[1]
-        return (pos1 + pos2) / 2       
+        return (pos1 + pos2) / 2   
+    
             
     # TODO: Temporary
-    def _calculate_safe(self, func, pos1, pos2):
+    @DeprecationWarning
+    def __calculate_safe(self, func, pos1, pos2):
         if pos1 is None or pos2 is None:
             return None
         else: return func(pos1, pos2)
         
-    def _calculate_safe(self, func, *pos_list):
-        for pos in pos_list:
-            if pos is None: return None
-        return func(*pos_list).astype(int)
+    def _calculate_safe(self, func, *param_list):
+        for param in param_list:
+            if param is None: return None
+        return func(*param_list).astype(int)
     
     def track_landmark(self, hdID, lmID, radius, color, thickness=1, linetype=cv2.LINE_8):
         curry = lambda img: self._track_landmark_safe(img, hdID, lmID, radius, color, thickness, linetype)
