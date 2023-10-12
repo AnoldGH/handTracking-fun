@@ -27,6 +27,10 @@ PINKY_PIP = 18
 PINKY_DIP = 19
 PINKY_TIP = 20
 
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+
 class handDetector():
       
     
@@ -111,14 +115,14 @@ class handDetector():
     
     
     # Drawing Sub-module
-    def _track_landmark_safe(self, img, hdID, lmID, radius, color, thickness=2, linetype=cv2.LINE_8):
+    def _track_landmark_safe(self, img, hdID, lmID, radius, color=BLUE, thickness=2, linetype=cv2.LINE_8):
         if self.results.multi_hand_landmarks:
             hand = self.results.multi_hand_landmarks[hdID]
             lm = hand.landmark[lmID]
             cx, cy = int(self.width * lm.x), int(self.height * lm.y)
             cv2.circle(img, (cx, cy), radius, color, thickness, linetype)            
     
-    def _track_landmarks_connection_safe(self, img, hdID, lm1ID, lm2ID, color, thickness=2, linetype=cv2.LINE_8):
+    def _track_landmarks_connection_safe(self, img, hdID, lm1ID, lm2ID, color=BLUE, thickness=2, linetype=cv2.LINE_8):
         if self.results.multi_hand_landmarks:
             hand = self.results.multi_hand_landmarks[hdID]
             lm1, lm2 = hand.landmark[lm1ID], hand.landmark[lm2ID]
@@ -144,20 +148,20 @@ class handDetector():
             if param is None: return None
         return func(*param_list).astype(int)
     
-    def track_landmark(self, hdID, lmID, radius, color, thickness=1, linetype=cv2.LINE_8):
+    def track_landmark(self, hdID, lmID, radius=5, color=BLUE, thickness=1, linetype=cv2.LINE_8):
         curry = lambda img: self._track_landmark_safe(img, hdID, lmID, radius, color, thickness, linetype)
         self.drawings.append(curry)
         # Return a curry function to get landmark coordinate
         return lambda: self.positionOf(lmID, hdID)
         
-    def track_landmarks_connection(self, hdID, lm1ID, lm2ID, color, thickness=1, linetype=cv2.LINE_8):
+    def track_landmarks_connection(self, hdID, lm1ID, lm2ID, color=BLUE, thickness=1, linetype=cv2.LINE_8):
         curry = lambda img: \
             self._track_landmarks_connection_safe(img, hdID, lm1ID, lm2ID, color, thickness, linetype)
         self.drawings.append(curry)
         # Return a curry function to get two end-points
         return lambda: (self.positionOf(lm1ID, hdID), self.positionOf(lm1ID, hdID))
         
-    def track_midpoint_between(self, hd1ID, lm1ID, hd2ID, lm2ID, radius, color, thickness=1, linetype=cv2.LINE_8):
+    def track_midpoint_between(self, hd1ID, lm1ID, hd2ID, lm2ID, radius=5, color=BLUE, thickness=1, linetype=cv2.LINE_8):
         query = lambda: self._calculate_safe(
             self._midpoint, self.positionOf(lm1ID, hd1ID), 
             self.positionOf(lm2ID, hd2ID))
