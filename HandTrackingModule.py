@@ -174,9 +174,10 @@ class handDetector():
     def _draw_custom_point(self, drawing):
         self.drawings.append(drawing)
         
-    def render(self, img):
+    def render(self, img, draw=True):
         for drawing in self.drawings:
             drawing(img)
+        if draw: self.findHands(img, draw)
     
     # Curry helper functions
     def Xof(self, lmID, hdID=0):
