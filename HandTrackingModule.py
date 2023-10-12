@@ -85,6 +85,7 @@ class handDetector():
         
         return landmarks
     
+    # Returns False if failed to detect any hand, otherwise True
     def update(self, img):
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.hands.process(imgRGB)
@@ -92,6 +93,8 @@ class handDetector():
         self._ctime = time.time()
         self.fps = int(1 / (self._ctime - self._ptime))
         self._ptime = self._ctime
+        
+        return self.results.multi_hand_landmarks is not None
         
     
     def getFPS(self):
