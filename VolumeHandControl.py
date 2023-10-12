@@ -42,10 +42,7 @@ minVolume, maxVolume, _ = volume.GetVolumeRange()
 vol = 0
 volBar = 400
 
-video = cv2.VideoWriter('video.mp4', -1, 24, (640, 360))
-
-i = 0
-while i < 150:
+while True:
     success, img = capture.read()
     
     if success:
@@ -71,7 +68,6 @@ while i < 150:
             volume.SetMasterVolumeLevel(vol, None)
             
         detector.render(img)
-        video.write(img)
 
     # Display Volume Bar
     cv2.rectangle(img, (50, 150), (85, 400), (0, 255, 0), 3)
@@ -82,7 +78,3 @@ while i < 150:
     
     cv2.imshow("Img", img)
     cv2.waitKey(1)
-    
-    i += 1
-
-video.release()
