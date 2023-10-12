@@ -48,7 +48,7 @@ while True:
     success, img = capture.read()
     
     if success:
-        hasHand = detector.update()
+        hasHand = detector.update(img)
         img = detector.findHands(img)
 
         if hasHand:
