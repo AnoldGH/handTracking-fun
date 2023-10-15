@@ -54,8 +54,8 @@ class handDetector():
         self.drawings = list()
         
         # todo: parametrize the following
-        self.height = 360
-        self.width = 640
+        self._height = 360
+        self._width = 640
         
         # Stats - used for running diagnostics
         self._stime = time.time()
@@ -105,6 +105,24 @@ class handDetector():
         return self.fps      
     
     
+    # Height and Width
+    
+    @property
+    def width(self):
+        return self._width
+    
+    @width.setter
+    def width(self, value):
+        self._width = value
+    
+    @property
+    def height(self):
+        return self._height
+    
+    @height.setter
+    def height(self, value):
+        self._height = value
+    
     # Utility Functions
     def distance_between(self, hd1ID, lm1ID, hd2ID, lm2ID):
         cx1, cy1 = self.positionOf(lm1ID, hd1ID)
@@ -119,15 +137,15 @@ class handDetector():
         if self.results.multi_hand_landmarks:
             hand = self.results.multi_hand_landmarks[hdID]
             lm = hand.landmark[lmID]
-            cx, cy = int(self.width * lm.x), int(self.height * lm.y)
+            cx, cy = int(self._width * lm.x), int(self._height * lm.y)
             cv2.circle(img, (cx, cy), radius, color, thickness, linetype)            
     
     def _track_landmarks_connection_safe(self, img, hdID, lm1ID, lm2ID, color=BLUE, thickness=2, linetype=cv2.LINE_8):
         if self.results.multi_hand_landmarks:
             hand = self.results.multi_hand_landmarks[hdID]
             lm1, lm2 = hand.landmark[lm1ID], hand.landmark[lm2ID]
-            cx1, cy1 = int(self.width * lm1.x), int(self.height * lm1.y)
-            cx2, cy2 = int(self.width * lm2.x), int(self.height * lm2.y)
+            cx1, cy1 = int(self._width * lm1.x), int(self._height * lm1.y)
+            cx2, cy2 = int(self._width * lm2.x), int(self._height * lm2.y)
             cv2.line(img, (cx1, cy1), (cx2, cy2), \
                 color, thickness, linetype)
 
@@ -186,12 +204,12 @@ class handDetector():
     # Curry helper functions
     def Xof(self, lmID, hdID=0):
         hand = self.results.multi_hand_landmarks
-        if hand: return self.width * hand[hdID].landmark[lmID].x
+        if hand: return self._width * hand[hdID].landmark[lmID].x
         else: return None
     
     def Yof(self, lmID, hdID=0):
         hand = self.results.multi_hand_landmarks
-        if hand: return self.height * hand[hdID].landmark[lmID].y
+        if hand: return self._height * hand[hdID].landmark[lmID].y
         else: return None
     
     def positionOf(self, lmID, hdID=0, cast_to_int=True):
@@ -207,6 +225,11 @@ class handDetector():
 def main():
     capture = cv2.VideoCapture(0)
     detector = handDetector()
+    
+    detector.width = capture.get(3)
+    detector.height = capture.get(4)
+    
+    print(detector.width, detector.height)
     
     # video = cv2.VideoWriter('video.mp4', -1, 24, (640, 360))
     
