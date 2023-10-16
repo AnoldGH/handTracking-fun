@@ -154,12 +154,6 @@ class handDetector():
         pos1 = pos[0]
         pos2 = pos[1]
         return (pos1 + pos2) / 2   
-    
-    @DeprecationWarning
-    def __calculate_safe(self, func, pos1, pos2):
-        if pos1 is None or pos2 is None:
-            return None
-        else: return func(pos1, pos2)
         
     def _calculate_safe(self, func, *param_list):
         for param in param_list:
@@ -243,8 +237,6 @@ def main():
         success, img = capture.read()
         if success:
             detector.update(img)
-            
-            img = detector.findHands(img)
             
             cv2.putText(img, str(detector.getFPS()), (10, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
             
